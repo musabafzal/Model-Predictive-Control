@@ -3,6 +3,32 @@ Self-Driving Car Engineer Nanodegree Program
 
 ---
 
+#### Student describes their model in detail. This includes the state, actuators and update equations.
+
+The model used is a kinematic bicycle model. Unlike the dynamic models it excludes the effects of inertia, friction etc. The model can be described using the following equations:
+```
+// x_[t+1] = x[t] + v[t] * cos(psi[t]) * dt
+// y_[t+1] = y[t] + v[t] * sin(psi[t]) * dt
+// psi_[t+1] = psi[t] + v[t] / Lf * delta[t] * dt
+// v_[t+1] = v[t] + a[t] * dt
+// cte[t+1] = f(x[t]) - y[t] + v[t] * sin(epsi[t]) * dt
+// epsi[t+1] = psi[t] - psides[t] + v[t] * delta[t] / Lf * dt
+```
+Where `x` and `y` denote the position of the car and `psi` denotes the heading direction. `v` denotes the velocity of the car and, `cte` and `epsi` denote cross track and orientation errors respectively.
+
+#### Student discusses the reasoning behind the chosen N (timestep length) and dt (elapsed duration between timesteps) values. Additionally the student details the previous values tried.
+
+Small N (timestep length) values lead to more responsive controllers, but are less accurate and can be unstable if the chosen value is too small. Large dt (elapsed duration between timesteps) values generally lead to smoother controls. For a N, the shorter duration between time steps dt, imply more accurate controls but also require a larger computation problem to be solved, thus increasing latency.
+So, for my case the values of N and dt were chosen to be 10 and 0.1 respectively.
+
+#### If the student preprocesses waypoints, the vehicle state, and/or actuators prior to the MPC procedure it is described.
+
+All computations are to be performed in the vehicle coordinate system. The waypoints are preprocessed by transforming them to the vehicle's perspective. This simplifies the process to fit a polynomial to the waypoints.
+
+#### The student implements Model Predictive Control that handles a 100 millisecond latency. Student provides details on how they deal with latency.
+
+The equations of the kinematic model depends on the actuations(steering angle and throttle) of the previous timestep whereas due to latency of 100ms these actuations are a timestep later. This change in the code is made in `MPC.cpp` file from `line 123-130`.
+
 ## Dependencies
 
 * cmake >= 3.5
@@ -19,7 +45,7 @@ Self-Driving Car Engineer Nanodegree Program
   * Run either `install-mac.sh` or `install-ubuntu.sh`.
   * If you install from source, checkout to commit `e94b6e1`, i.e.
     ```
-    git clone https://github.com/uWebSockets/uWebSockets 
+    git clone https://github.com/uWebSockets/uWebSockets
     cd uWebSockets
     git checkout e94b6e1
     ```
@@ -43,7 +69,7 @@ Self-Driving Car Engineer Nanodegree Program
        per this [forum post](https://discussions.udacity.com/t/incorrect-checksum-for-freed-object/313433/19).
   * Linux
     * You will need a version of Ipopt 3.12.1 or higher. The version available through `apt-get` is 3.11.x. If you can get that version to work great but if not there's a script `install_ipopt.sh` that will install Ipopt. You just need to download the source from the Ipopt [releases page](https://www.coin-or.org/download/source/Ipopt/).
-    * Then call `install_ipopt.sh` with the source directory as the first argument, ex: `sudo bash install_ipopt.sh Ipopt-3.12.1`. 
+    * Then call `install_ipopt.sh` with the source directory as the first argument, ex: `sudo bash install_ipopt.sh Ipopt-3.12.1`.
   * Windows: TODO. If you can use the Linux subsystem and follow the Linux instructions.
 * [CppAD](https://www.coin-or.org/CppAD/)
   * Mac: `brew install cppad`
@@ -128,4 +154,3 @@ still be compilable with cmake and make./
 
 ## How to write a README
 A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
-
